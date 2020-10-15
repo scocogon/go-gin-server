@@ -80,5 +80,14 @@ func main() {
 	 */
 	svr.POST("/post2", doPerson, newPerson, ginserver.BindForm, ginserver.BindJSON, ginserver.BindFormPost)
 
+	/**
+	 * 参数默认绑定：&Persion{} (newPerson())
+	 * 参数来源：url
+	 *
+	 * curl 'http://127.0.0.1:8080/get/sh?age=100&address=china'
+	 * output: => param: type(*main.person), content-type: , val: {"name":"sh","age":100,"address":"china"}
+	 */
+	svr.GET("/get/:name", doPerson, newPerson, ginserver.BindURI, ginserver.BindForm)
+
 	svr.Run(":8080")
 }

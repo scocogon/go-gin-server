@@ -1,9 +1,7 @@
 package ginserver
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -88,18 +86,18 @@ func (s *Server) bindParam(httpMethod, relativePath string, exec FuncExec, creat
 		})
 	}
 
+	if creator == nil {
+		creator = func() interface{} { return &map[string]interface{}{} }
+	}
+
 	return s.egn.Handle(httpMethod, relativePath, func(c *gin.Context) {
-		var param interface{}
-		if creator != nil {
-			param = creator()
-		} else {
-			param = &map[string]interface{}{}
-		}
+		param := creator()
 
 		for _, f := range binds {
-			if err := f(c, param); err != nil {
-				fmt.Fprintf(os.Stderr, "error: %s\n", err)
-			}
+			f(c, param)
+			// if err := f(c, param); err != nil {
+			// 	fmt.Fprintf(os.Stderr, "error: %s\n", err)
+			// }
 		}
 
 		exec(c, param)
